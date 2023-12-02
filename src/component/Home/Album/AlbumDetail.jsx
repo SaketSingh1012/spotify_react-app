@@ -7,15 +7,20 @@ import {
   Button,
   IconButton,
   useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import AddSongForm from "./AddSongForm";
 import getSongData from "../../../getSongs";
-// import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
-import { MdDelete } from "react-icons/md";
 
 import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../../../Config"; // Import your Firebase configuration
+import { db } from "../../../Config";
 
 const AlbumDetail = ({
   currentSongUrl,
@@ -29,6 +34,9 @@ const AlbumDetail = ({
 }) => {
   const [showAddSongForm, setShowAddSongForm] = useState(false);
   const toast = useToast();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -76,6 +84,7 @@ const AlbumDetail = ({
         position: "top",
       });
     }
+    onClose();
   };
 
   return (
@@ -148,7 +157,7 @@ const AlbumDetail = ({
           justifyContent="space-between"
         >
           {songs.map((song) => (
-            <Flex flexDirection="column">
+            <Flex flexDirection="column" key={song.id}>
               <Box>
                 <Text fontFamily="sans-serif" color="white">
                   {song.title}
@@ -176,55 +185,85 @@ const AlbumDetail = ({
                     onTogglePlayPause(song.id, album.id);
                   }}
                 />
-                {/* <Box mt={2} ml={2}>
-                    <IconButton
-                      bgColor="#2bc848"
-                      borderRadius="30px"
-                      color="black"
-                      mr={4}
-                      ml={10}
-                      _hover={{
-                        background:
-                          "linear-gradient(to right, rgb(143, 255, 184), #33ff0080 )",
-                      }}
-                      icon={
-                        playingSongInfo &&
-                        playingSongInfo.songId === song.id &&
-                        playingSongInfo.albumId === album.id ? (
-                          <BsFillPauseFill />
-                        ) : (
-                          <BsFillPlayFill />
-                        )
-                      }
-                      aria-label={
-                        playingSongInfo &&
-                        playingSongInfo.songId === song.id &&
-                        playingSongInfo.albumId === album.id
-                          ? "Pause"
-                          : "Play"
-                      }
-                      variant="ghost"
-                      colorScheme="teal"
-                      size="md"
-                    />
-                  </Box> */}
-
                 <Box mt="12px">
-                  <IconButton
-                    icon={<MdDelete />}
-                    borderRadius="30px"
-                    ml={12}
-                    bgColor="#00000080"
-                    color="red"
-                    size="sm"
-                    aria-label="Delete Song"
+                  <Button
+                    mt={3}
+                    ml={2.5}
+                    width="45%"
+                    fontSize="12px"
+                    variant="ghost"
+                    fontFamily="sans-serif"
+                    borderRadius="60px"
+                    background="linear-gradient(to bottom, rgb(17, 191, 75), #00000047 )"
+                    boxShadow="0px 3px 10px 5px rgba(0, 2, 1, 0.439)"
+                    textShadow="1px 1px #121212d0"
+                    color="white"
                     _hover={{
                       background:
                         "linear-gradient(to bottom, rgb(6, 6, 6), #06060680 )",
-                      boxShadow: "0px 3px 5px 5px rgba(0, 2, 1, 0.8)",
+                      boxShadow: "0px 3px 10px 5px rgba(0, 2, 1, 0.8)",
                     }}
-                    onClick={() => handleDeleteSong(song.id)}
-                  ></IconButton>
+                    onClick={onOpen}
+                  >
+                    Delete Song
+                  </Button>
+                  <AlertDialog
+                    isOpen={isOpen}
+                    leastDestructiveRef={cancelRef}
+                    onClose={onClose}
+                  >
+                    <AlertDialogOverlay>
+                      <AlertDialogContent borderRadius="20px" bgColor="#1cb44a">
+                        <AlertDialogHeader
+                          color="#ffffff"
+                          textShadow="1px 0px #393939d0"
+                          fontFamily="sans-serif"
+                          fontSize="lg"
+                          mt={3}
+                          fontWeight="bold"
+                        >
+                          Delete Song
+                        </AlertDialogHeader>
+                        <AlertDialogBody color="#323232">
+                          Are you sure you want to delete the song?
+                        </AlertDialogBody>
+                        <AlertDialogFooter>
+                          <Button
+                            p={3}
+                            borderRadius="25px"
+                            bgColor="black"
+                            color="white"
+                            mb={2}
+                            _hover={{
+                              background:
+                                "linear-gradient(to bottom, rgb(6, 6, 6), #06060680 )",
+                              boxShadow: "0px 2px 2px 2px rgba(0, 2, 1, 0.8)",
+                            }}
+                            ref={cancelRef}
+                            onClick={onClose}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            p={3}
+                            borderRadius="25px"
+                            bgColor="red"
+                            color="white"
+                            mb={2}
+                            _hover={{
+                              background:
+                                "linear-gradient(to bottom, rgb(6, 6, 6), #06060680 )",
+                              boxShadow: "0px 2px 2px 2px rgba(0, 2, 1, 0.8)",
+                            }}
+                            onClick={() => handleDeleteSong(song.id)}
+                            ml={3}
+                          >
+                            Delete
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialogOverlay>
+                  </AlertDialog>
                 </Box>
               </Box>
             </Flex>
