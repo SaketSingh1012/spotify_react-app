@@ -33,7 +33,12 @@ const HomepageContent = ({ albums, setAlbums }) => {
   const handleCreateSong = (newSong) => {
     newSong.id = Date.now().toString();
 
-    setSongs((prevSongs) => [...prevSongs, newSong]);
+    setSongs((prevSongs) => {
+
+      console.log([...prevSongs, newSong]);
+      return [...prevSongs, newSong]
+    })
+
     onClose();
 
     toast({

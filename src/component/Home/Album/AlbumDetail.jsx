@@ -7,13 +7,6 @@ import {
   Button,
   IconButton,
   useToast,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import AddSongForm from "./AddSongForm";
@@ -29,39 +22,44 @@ const AlbumDetail = ({
   songs,
   setSongs,
   onTogglePlayPause,
-  handleCreateSong
+  handleCreateSong,
 }) => {
   const [showAddSongForm, setShowAddSongForm] = useState(false);
   const toast = useToast();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+  // const cancelRef = React.useRef();
 
+  const fetchSongs = async () => {
+    try {
+      const albumSongs = await getSongData(album.id);
+      console.log(albumSongs);
+      setSongs(albumSongs);
+    } catch (error) {
+      console.error("Error fetching songs:", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchSongs = async () => {
-      try {
-        const albumSongs = await getSongData(album.id);
-        setSongs(albumSongs);
-      } catch (error) {
-        console.error("Error fetching songs:", error.message);
-      }
-    };
     fetchSongs();
-  }, [album.id, setSongs]);
+  }, []);
 
   const handleAddSong = () => {
     setShowAddSongForm(true);
   };
 
   const handleDeleteSong = async (songId) => {
-    if(!songId){
+    console.log(songId);
+
+    if (!songId) {
       console.log("songId not found");
       return;
     }
     const songRef = doc(db, "songs", songId);
 
     try {
-      await deleteDoc(songRef);
+      console.log(songRef);
+      const res = await deleteDoc(songRef);
+      console.log(res);
 
       setSongs((prevSongs) => prevSongs.filter((song) => song.id !== songId));
 
@@ -73,7 +71,7 @@ const AlbumDetail = ({
         duration: 2000,
       });
 
-      console.log("Song deleted successfully!");
+      console.log(songRef, "Song deleted successfully!");
     } catch (error) {
       console.error("Error deleting song:", error.message);
       toast({
@@ -86,7 +84,7 @@ const AlbumDetail = ({
         position: "top",
       });
     }
-    onClose();
+    // onClose();
   };
 
   return (
@@ -158,7 +156,8 @@ const AlbumDetail = ({
           mt={10}
           justifyContent="space-between"
         >
-          {songs.map((song) => (
+          {songs.map((song) => {
+            return(
             <Flex flexDirection="column" key={song.id}>
               <Box>
                 <Text fontFamily="sans-serif" color="white">
@@ -205,11 +204,13 @@ const AlbumDetail = ({
                         "linear-gradient(to bottom, rgb(6, 6, 6), #06060680 )",
                       boxShadow: "0px 3px 10px 5px rgba(0, 2, 1, 0.8)",
                     }}
-                    onClick={onOpen}
+                    onClick={()=>{
+                      handleDeleteSong(song.id)
+                    }}
                   >
                     Delete Song
                   </Button>
-                  <AlertDialog
+                  {/* <AlertDialog
                     isOpen={isOpen}
                     leastDestructiveRef={cancelRef}
                     onClose={onClose}
@@ -247,6 +248,8 @@ const AlbumDetail = ({
                             Cancel
                           </Button>
                           <Button
+                            className={song.id}
+                            id={song.id}
                             p={3}
                             borderRadius="25px"
                             bgColor="red"
@@ -257,7 +260,11 @@ const AlbumDetail = ({
                                 "linear-gradient(to bottom, rgb(6, 6, 6), #06060680 )",
                               boxShadow: "0px 2px 2px 2px rgba(0, 2, 1, 0.8)",
                             }}
-                            onClick={() => handleDeleteSong(song.id)}
+                            onClick={() => {
+                              const songIdToDelete = currentSong.id;
+        console.log(songIdToDelete);
+        handleDeleteSong(songIdToDelete);
+                            }}
                             ml={3}
                           >
                             Delete
@@ -265,17 +272,19 @@ const AlbumDetail = ({
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialogOverlay>
-                  </AlertDialog>
+                  </AlertDialog> */}
                 </Box>
               </Box>
             </Flex>
-          ))}
+            )
+})}
         </Grid>
         {showAddSongForm && (
           <AddSongForm
             albumId={album.id}
             onCreateSong={handleCreateSong}
             onClose={() => setShowAddSongForm(false)}
+            fetchSongs={fetchSongs}
           />
         )}
       </Box>

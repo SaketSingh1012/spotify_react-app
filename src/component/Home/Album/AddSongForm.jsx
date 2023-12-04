@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { db, addDoc, collection } from "../../../Config";
 
-const AddSongForm = ({ albumId, onCreateSong, onClose }) => {
+const AddSongForm = ({ fetchSongs,albumId, onCreateSong, onClose }) => {
   const [title, setTitle] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [validationError, setValidationError] = useState("");
@@ -47,9 +47,9 @@ const AddSongForm = ({ albumId, onCreateSong, onClose }) => {
     const newSong = { title, coverImage,mp3URL, albumId };
 
     addDoc(collection(db, "songs"), newSong)
-      .then(() => {
-        onCreateSong(newSong);
-        console.log("song added")
+      .then((res) => {
+        fetchSongs();
+        console.log("song added",res)
         setTitle("");
         setCoverImage("");
         setMP3URL("")
