@@ -8,7 +8,7 @@ import getAlbumData from "../../FirebaseServices";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../Config";
 import SpotifyPlayer from "./Album/SpotifyPLayer";
-// import Footer from "./Footer";
+import { useDisclosure } from "@chakra-ui/react";
 
 const HomepageContent = ({ albums, setAlbums }) => {
   const toast = useToast();
@@ -16,7 +16,7 @@ const HomepageContent = ({ albums, setAlbums }) => {
   const [playingSongInfo, setPlayingSongInfo] = useState(null);
   const [songs, setSongs] = useState([]);
   const [currentSongUrl, setCurrentSongUrl] = useState("");
-
+  const { onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,14 +25,24 @@ const HomepageContent = ({ albums, setAlbums }) => {
     };
     fetchData();
   }, [setAlbums]);
-
   const handleSelectAlbum = (selectedAlbum) => {
     setSelectedAlbum(selectedAlbum);
-    setPlayingSongInfo(null); // Reset playing song when selecting a new album
+    setPlayingSongInfo(null);
   };
 
-  const handleAddSong = () => {
-    console.log("Add Song clicked for album:", selectedAlbum);
+  const handleCreateSong = (newSong) => {
+    newSong.id = Date.now().toString();
+
+    setSongs((prevSongs) => [...prevSongs, newSong]);
+    onClose();
+
+    toast({
+      title: "Song Created",
+      status: "success",
+      isClosable: true,
+      position: "top",
+      duration: 2000,
+    });
   };
 
   const handleGoBack = () => {
@@ -79,10 +89,8 @@ const HomepageContent = ({ albums, setAlbums }) => {
         prevPlayingSongInfo.songId === songId &&
         prevPlayingSongInfo.albumId === albumId
       ) {
-        // If the same song is clicked, pause it
         return null;
       } else {
-        // If a new song or album is clicked, play it
         return { songId, albumId };
       }
     });
@@ -93,10 +101,10 @@ const HomepageContent = ({ albums, setAlbums }) => {
       <Box ml={10} mt={2} flex="1" mb="20vh">
         {selectedAlbum ? (
           <AlbumDetail
-          currentSongUrl={currentSongUrl}
-          setCurrentSongUrl={setCurrentSongUrl}
+            currentSongUrl={currentSongUrl}
+            setCurrentSongUrl={setCurrentSongUrl}
             album={selectedAlbum}
-            onAddSong={handleAddSong}
+            handleCreateSong={handleCreateSong}
             onGoBack={handleGoBack}
             playingSongInfo={playingSongInfo}
             songs={songs}

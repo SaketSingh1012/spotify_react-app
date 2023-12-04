@@ -49,6 +49,7 @@ const AddSongForm = ({ albumId, onCreateSong, onClose }) => {
     addDoc(collection(db, "songs"), newSong)
       .then(() => {
         onCreateSong(newSong);
+        console.log("song added")
         setTitle("");
         setCoverImage("");
         setMP3URL("")

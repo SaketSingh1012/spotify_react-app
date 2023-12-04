@@ -23,14 +23,13 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../../Config";
 
 const AlbumDetail = ({
-  currentSongUrl,
   setCurrentSongUrl,
   album,
   onGoBack,
-  playingSongInfo,
   songs,
   setSongs,
   onTogglePlayPause,
+  handleCreateSong
 }) => {
   const [showAddSongForm, setShowAddSongForm] = useState(false);
   const toast = useToast();
@@ -47,7 +46,6 @@ const AlbumDetail = ({
         console.error("Error fetching songs:", error.message);
       }
     };
-
     fetchSongs();
   }, [album.id, setSongs]);
 
@@ -56,6 +54,10 @@ const AlbumDetail = ({
   };
 
   const handleDeleteSong = async (songId) => {
+    if(!songId){
+      console.log("songId not found");
+      return;
+    }
     const songRef = doc(db, "songs", songId);
 
     try {
@@ -272,9 +274,7 @@ const AlbumDetail = ({
         {showAddSongForm && (
           <AddSongForm
             albumId={album.id}
-            onCreateSong={(newSong) => {
-              setSongs((prevSongs) => [...prevSongs, newSong]);
-            }}
+            onCreateSong={handleCreateSong}
             onClose={() => setShowAddSongForm(false)}
           />
         )}

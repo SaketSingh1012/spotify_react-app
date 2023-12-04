@@ -46,7 +46,6 @@ const CreateAlbumForm = ({ onCreateAlbum }) => {
     addDoc(collection(db, "albums"), newAlbum)
       .then(() => {
         onCreateAlbum(newAlbum);
-
         setTitle("");
         setCoverImage("");
         setValidationError("");
