@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+// import {ref, getMetadata } from 'firebase/storage'
 import {
   Box,
   Grid,
@@ -27,8 +28,6 @@ const AlbumDetail = ({
   const [showAddSongForm, setShowAddSongForm] = useState(false);
   const toast = useToast();
 
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  // const cancelRef = React.useRef();
 
   const fetchSongs = async () => {
     try {
@@ -43,6 +42,7 @@ const AlbumDetail = ({
     fetchSongs();
   }, []);
 
+  
   const handleAddSong = () => {
     setShowAddSongForm(true);
   };
