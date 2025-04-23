@@ -12,13 +12,13 @@ import {
 } from "firebase/firestore"; // Import addDoc and collection
 
 const firebaseConfig = {
-  apiKey: "AIzaSyABMnG38Z9q2jn91RYfVCaRzivTXCivnOA",
-  authDomain: "spotify-bfd6c.firebaseapp.com",
-  projectId: "spotify-bfd6c",
-  storageBucket: "spotify-bfd6c.appspot.com",
-  messagingSenderId: "518417454819",
-  appId: "1:518417454819:web:a88629ae7b25fe320757d6",
-  measurementId: "G-T5WNQCBXF0",
+  apiKey: "AIzaSyARz8T3vmIz1aTWsjDm4yE0499MHpTL4qo",
+  authDomain: "spotifyapp-eb0e4.firebaseapp.com",
+  projectId: "spotifyapp-eb0e4",
+  storageBucket: "spotifyapp-eb0e4.firebasestorage.app",
+  messagingSenderId: "715862899458",
+  appId: "1:715862899458:web:77cb6584f2d8649ff4201b",
+  measurementId: "G-MSDS3YRZ1T"
 };
 
 const app = initializeApp(firebaseConfig);
